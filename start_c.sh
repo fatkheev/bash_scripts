@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Задаем имя проекта
-project_name=$1
+name=$1
 
 # Создаем .vscode директорию и файл c_cpp_properties.json внутри неё
 rm -rf .vscode
@@ -31,18 +31,18 @@ echo '{
 # Создаем Makefile
 echo 'GCC=gcc -Wall -Werror -Wextra
 
-all: s21_math
+all: '$name'
 
-s21_math: s21_math.o
-	$(GCC) s21_math.o -o s21_math
+'$name': '$name'.o
+	$(GCC) '$name'.o -o '$name'
 
-s21_math.o: s21_math.c
-	$(GCC) -c s21_math.c -o s21_math.o
+'$name'.o: '$name'.c
+	$(GCC) -c '$name'.c -o '$name'.o
 
-s21_math.a : s21_math.c
-	$(GCC) -c s21_math.c 
-	ar rc  s21_math.a s21_math.o 
-	ranlib s21_math.a
+'$name'.a : '$name'.c
+	$(GCC) -c '$name'.c 
+	ar rc '$name'.a '$name'.o 
+	ranlib '$name'.a
 
 rebuild: clean all
 
@@ -51,5 +51,22 @@ clean:
 	rm -rf *.a
 	rm -rf *.out' > Makefile
 
-# Создаем основные файлы проекта (если нужно)
-touch main.c
+# Создаем файлы $name.c и $name.h
+echo '#ifndef '$name'_H
+#define '$name'_H
+
+#include <stdio.h>
+
+// Другие инициализации
+
+#endif' > $name.h
+
+echo '#include "'$name'.h"
+
+int main() {
+    int number;
+    printf("Enter a number: ");
+    scanf("%d", &number);
+    printf("The number is: %d", number);
+    return 0;
+}' > $name.c
