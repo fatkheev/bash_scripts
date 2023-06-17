@@ -3,13 +3,8 @@
 # Задаем имя проекта
 project_name=$1
 
-# Создаем папку для проекта
-mkdir $project_name
-
-# Переходим в папку проекта
-cd $project_name
-
 # Создаем .vscode директорию и файл c_cpp_properties.json внутри неё
+rm -rf .vscode
 mkdir .vscode
 echo '{
     "configurations": [
