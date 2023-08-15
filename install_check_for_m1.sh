@@ -62,7 +62,9 @@ echo "export LIBRARY_PATH=\"$LIB_DIR:\$LIBRARY_PATH\"" >> ~/.zshrc
 source ~/.bashrc
 source ~/.zshrc
 
-echo "Готово!"
+echo "Готово! Дождись перезагрузки консоли..."
 
 sleep 3
 exec zsh
+
+echo "Теперь точно готово!"
