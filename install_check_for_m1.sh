@@ -1,12 +1,13 @@
 #!/bin/zsh
 
 read -r -d '' ASCII_ART <<"EOF"
-.___  ___.      ___      .___________. __    __    ______        _______. __    __       ___      
-|   \/   |     /   \     |           ||  |  |  |  /  __  \      /       ||  |  |  |     /   \     
-|  \  /  |    /  ^  \    `---|  |----`|  |__|  | |  |  |  |    |   (----`|  |__|  |    /  ^  \    
-|  |\/|  |   /  /_\  \       |  |     |   __   | |  |  |  |     \   \    |   __   |   /  /_\  \   
-|  |  |  |  /  _____  \      |  |     |  |  |  | |  `--'  | .----)   |   |  |  |  |  /  _____  \  
-|__|  |__| /__/     \__\     |__|     |__|  |__|  \______/  |_______/    |__|  |__| /__/     \__\ 
+`7MMM.     ,MMF'           mm    `7MM                          `7MM                 
+  MMMb    dPMM             MM      MM                            MM                 
+  M YM   ,M MM   ,6"Yb.  mmMMmm    MMpMMMb.   ,pW"Wq.  ,pP"Ybd   MMpMMMb.   ,6"Yb.  
+  M  Mb  M' MM  8)   MM    MM      MM    MM  6W'   `Wb 8I   `"   MM    MM  8)   MM  
+  M  YM.P'  MM   ,pm9MM    MM      MM    MM  8M     M8 `YMMMa.   MM    MM   ,pm9MM  
+  M  `YM'   MM  8M   MM    MM      MM    MM  YA.   ,A9 L.   I8   MM    MM  8M   MM  
+.JML. `'  .JMML.`Moo9^Yo.  `Mbmo .JMML  JMML. `Ybmd9'  M9mmmP' .JMML  JMML.`Moo9^Yo.
 EOF
 
 for i in {1..3}; do
@@ -44,6 +45,13 @@ CHECK_DIR=$(dirname "$CHECK_PATH")
 LIB_DIR=$(dirname "$CHECK_DIR")/lib
 
 echo "Добавление путей к переменным окруженим..."
+
+echo 'export PATH="$PATH:/opt/homebrew/bin:/path/to/pip"' >> ~/.bashrc
+echo 'export PATH="/opt/homebrew/include:$PATH"' >> ~/.bashrc
+
+echo 'export PATH="$PATH:/opt/homebrew/bin:/path/to/pip"' >> ~/.zshrc
+echo 'export PATH="/opt/homebrew/include:$PATH"' >> ~/.zshrc
+
 
 echo "export CPATH=\"$CHECK_DIR:\$CPATH\"" >> ~/.bashrc
 echo "export LIBRARY_PATH=\"$LIB_DIR:\$LIBRARY_PATH\"" >> ~/.bashrc
