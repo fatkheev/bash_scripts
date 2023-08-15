@@ -63,3 +63,6 @@ source ~/.bashrc
 source ~/.zshrc
 
 echo "Готово!"
+
+sleep 3
+exec zsh
