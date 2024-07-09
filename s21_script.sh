@@ -194,7 +194,7 @@ else
 fi
 
 CLEAN_CMD="function clean {
-    sh '/Users/$NICKNAME/Documents/scripts/clean_memory_on_macos_zapуск_bash_name.sh'
+    sh '/Users/$NICKNAME/Documents/scripts/clean_memory_on_macos_zapusk_bash_name.sh'
 }"
 
 if grep -q "function clean" "$ZPROFILE"; then
