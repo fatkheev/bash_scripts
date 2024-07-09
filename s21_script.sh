@@ -93,25 +93,30 @@ else
     eval "$(/opt/goinfre/$NICKNAME/homebrew/bin/brew shellenv)" 
     brew update --force --quiet 
     chmod -R go-w "$(brew --prefix)/zsh"
-    echo "Homebrew установлен."
+    echo -e"\033[92mHomebrew установлен.\033[0m"
 fi
 
 # Линковка докера в другое пространство
-if [ -L ~/goinfre/Docker/Data ]; then
+if [ -d ~/goinfre/Docker/Data ]; then
     echo -e "\033[31mПапка Docker уже существует.\033[0m"
 else
     echo "Создание папки Docker в goinfre..."
     mkdir -p ~/goinfre/Docker/Data
-    echo "Папка Docker создана."
+    echo -e "\033[92mПапка Docker создана.\033[0m"
 fi
 
+# Линковка докера
 if [ -L ~/Library/Containers/com.docker.docker ]; then
     echo -e "\033[31mЛинковка Docker уже существует.\033[0m"
 else
     echo "Линковка Docker в другое пространство..."
     rm -rf ~/Library/Containers/com.docker.docker
     ln -s ~/goinfre/Docker ~/Library/Containers/com.docker.docker
-    echo "Линковка Docker выполнена."
+    if [ $? -ne 0 ]; then
+        echo -e "\033[31mОшибка при создании символической ссылки для Docker\033[0m"
+        exit 1
+    fi
+    echo -e "\033[92mЛинковка Docker выполнена.\033[0m"
 fi
 
 # # Создание директорий для Homebrew
@@ -134,8 +139,20 @@ ZPROFILE=~/.zprofile
 # Проверяем, существует ли файл .zprofile и создаем его, если не существует
 if [ ! -f "$ZPROFILE" ]; then
     touch "$ZPROFILE"
-    echo "Файл $ZPROFILE создан."
+    echo -e "\033[92mФайл $ZPROFILE создан.\033[0m"
 fi
+
+# Функция для добавления новой строки, если это необходимо
+add_newline_if_needed() {
+    local file="$1"
+    if [ -s "$file" ]; then
+        if [ "$(tail -c 1 "$file")" != "" ]; then
+            echo -e "\n" >> "$file"
+        elif [ "$(tail -c 2 "$file" | head -c 1)" != "" ]; then
+            echo -e "" >> "$file"
+        fi
+    fi
+}
 
 # Добавление функции brsw
 BRWS_CMD="function brsw {
@@ -146,8 +163,26 @@ BRWS_CMD="function brsw {
 if grep -q "function brsw" "$ZPROFILE"; then
     echo -e "\033[31mФункция brsw уже существует в $ZPROFILE.\033[0m"
 else
+    add_newline_if_needed "$ZPROFILE"
     echo "$BRWS_CMD" >> "$ZPROFILE"
-    echo "Функция brsw добавлена в $ZPROFILE."
+    echo -e "\033[92mФункция brsw добавлена в $ZPROFILE.\033[0m"
+fi
+
+# Добавление функции clean в .zprofile
+CLEAN_CMD="function clean {
+    sh '/Users/$NICKNAME/Documents/scripts/clean_memory_on_macos_zapusk_bash_name.sh'
+}"
+
+if grep -q "function clean" "$ZPROFILE"; then
+    echo -e "\033[31mФункция clean уже существует в $ZPROFILE.\033[0m"
+else
+    add_newline_if_needed "$ZPROFILE"
+    echo "$CLEAN_CMD" >> "$ZPROFILE"
+    if [ $? -ne 0 ]; then
+        echo -e "\033[31mОшибка при добавлении функции clean в $ZPROFILE.\033[0m"
+        exit 1
+    fi
+    echo -e "\033[92mФункция clean добавлена в $ZPROFILE.\033[0m"
 fi
 
 # Создание папки scripts в ~/Documents/ и скачивание файла
@@ -170,7 +205,7 @@ if [ -d "$SCRIPTS_DIR" ]; then
             echo -е "\033[31mОшибка при установке прав на файл clean_memory_on_macos_zapusk_bash_name.sh\033[0m"
             exit 1
         fi
-        echo "Файл скачан и сделан исполняемым."
+        echo -e "\033[92mФайл скачан и сделан исполняемым.\033[0m"
     fi
 else
     echo "Создание папки scripts в ~/Documents/..."
@@ -190,23 +225,9 @@ else
         echo -е "\033[31mОшибка при установке прав на файл clean_memory_on_macos_zapusk_bash_name.sh\033[0m"
         exit 1
     fi
-    echo "Файл скачан и сделан исполняемым."
+    echo -e "\033[92mФайл скачан и сделан исполняемым.\033[0m"
 fi
 
-CLEAN_CMD="function clean {
-    sh '/Users/$NICKNAME/Documents/scripts/clean_memory_on_macos_zapusk_bash_name.sh'
-}"
-
-if grep -q "function clean" "$ZPROFILE"; then
-    echo -e "\033[31mФункция clean уже существует в $ZPROFILE.\033[0m"
-else
-    echo "$CLEAN_CMD" >> "$ZPROFILE"
-    if [ $? -ne 0 ]; then
-        echo -е "\033[31мОшибка при добавлении функции clean в $ZPROFILE.\033[0m"
-        exit 1
-    fi
-    echo "Функция clean добавлена в $ZPROFILE."
-fi
 
 source ~/.zprofile
 
@@ -219,7 +240,7 @@ ZSHRC=~/.zshrc
 # Проверяем, существует ли файл .zshrc и создаем его, если не существует
 if [ ! -f "$ZSHRC" ]; then
     touch "$ZSHRC"
-    echo "Файл $ZSHRC создан."
+    echo -e "\033[92mФайл $ZSHRC создан.\033[0m"
 fi
 
 # Функция для добавления строки в .zshrc, если ее нет
@@ -227,7 +248,7 @@ add_to_zshrc() {
     local STRING="$1"
     if ! grep -qF "$STRING" "$ZSHRC"; then
         echo "$STRING" >> "$ZSHRC"
-        echo "Добавлено в .zshrc: $STRING"
+        echo -e "\033[92mДобавлено в .zshrc: $STRING\033[0m"
     else
         echo -e "\033[31mУже существует в .zshrc: $STRING\033[0m"
     fi
