@@ -53,8 +53,8 @@ animate_ascii_art() {
 animate_ascii_art "$ASCII_ART" COLORS[@]
 
 # ==============================================================================================
-
 # Проверка, что передан аргумент (никнейм)
+
 if [ -z "$1" ]; then
     echo -e "\033[31mОшибка: Никнейм не указан.\033[0m"
     echo "Использование: ./s21_script <nick>"
@@ -75,19 +75,8 @@ if [ "$CONFIRMATION" != "Y" ]; then
 fi
 
 # ==============================================================================================
-
-# Линковка докера в другое пространство
-if [ -L ~/Library/Containers/com.docker.docker ]; then
-    echo -e "\033[31mЛинковка Docker уже существует.\033[0m"
-else
-    echo "Линковка Docker в другое пространство..."
-    rm -rf ~/Library/Containers/com.docker.docker
-    mkdir -p ~/goinfre/Docker/Data
-    ln -s ~/goinfre/Docker ~/Library/Containers/com.docker.docker
-    echo "Линковка Docker выполнена."
-fi
-
 # Создание папки с ником и установка Homebrew в goinfre
+
 GOINFRE_DIR=/opt/goinfre/$NICKNAME
 if [ -d $GOINFRE_DIR/homebrew ]; then
     echo -e "\033[31mHomebrew уже установлен в $GOINFRE_DIR.\033[0m"
@@ -107,9 +96,38 @@ else
     echo "Homebrew установлен."
 fi
 
-# ==============================================================================================
+# Линковка докера в другое пространство
+if [ -L ~/goinfre/Docker/Data ]; then
+    echo -e "\033[31mПапка Docker уже существует.\033[0m"
+else
+    echo "Создание папки Docker в goinfre..."
+    mkdir -p ~/goinfre/Docker/Data
+    echo "Папка Docker создана."
+fi
 
+if [ -L ~/Library/Containers/com.docker.docker ]; then
+    echo -e "\033[31mЛинковка Docker уже существует.\033[0m"
+else
+    echo "Линковка Docker в другое пространство..."
+    rm -rf ~/Library/Containers/com.docker.docker
+    ln -s ~/goinfre/Docker ~/Library/Containers/com.docker.docker
+    echo "Линковка Docker выполнена."
+fi
+
+# # Создание директорий для Homebrew
+# HOMEBREW_CACHE=$GOINFRE_DIR/homebrew/Caches
+# HOMEBREW_TEMP=$GOINFRE_DIR/homebrew/Temp
+# HOMEBREW_LOCKS_TARGET=$GOINFRE_DIR/homebrew/Locks
+# HOMEBREW_LOCKS_FOLDER=$HOME/.brew/var/homebrew
+
+# [ ! -d "$HOMEBREW_CACHE" ] && mkdir -p $HOMEBREW_CACHE
+# [ ! -d "$HOMEBREW_TEMP" ] && mkdir -p $HOMEBREW_TEMP
+# [ ! -d "$HOMEBREW_LOCKS_TARGET" ] && mkdir -p $HOMEBREW_LOCKS_TARGET
+# [ ! -d "$HOMEBREW_LOCKS_FOLDER" ] && mkdir -p $HOMEBREW_LOCKS_FOLDER
+
+# ==============================================================================================
 # Настройка .zprofile
+
 echo "Настройка .zprofile..."
 ZPROFILE=~/.zprofile
 
@@ -175,9 +193,26 @@ else
     echo "Файл скачан и сделан исполняемым."
 fi
 
-# ==============================================================================================
+CLEAN_CMD="function clean {
+    sh '/Users/$NICKNAME/Documents/scripts/clean_memory_on_macos_zapуск_bash_name.sh'
+}"
 
+if grep -q "function clean" "$ZPROFILE"; then
+    echo -e "\033[31mФункция clean уже существует в $ZPROFILE.\033[0m"
+else
+    echo "$CLEAN_CMD" >> "$ZPROFILE"
+    if [ $? -ne 0 ]; then
+        echo -е "\033[31мОшибка при добавлении функции clean в $ZPROFILE.\033[0m"
+        exit 1
+    fi
+    echo "Функция clean добавлена в $ZPROFILE."
+fi
+
+source ~/.zprofile
+
+# ==============================================================================================
 # Настройка .zshrc
+
 echo "Настройка .zshrc..."
 ZSHRC=~/.zshrc
 
@@ -199,13 +234,12 @@ add_to_zshrc() {
 }
 
 # Добавление необходимых строк в .zshrc
+
 add_to_zshrc 'export PATH="/usr/local/bin/docker:$PATH"'
 add_to_zshrc 'export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"'
 add_to_zshrc 'export GOPATH=/opt/goinfre/'$NICKNAME'/go'
 add_to_zshrc 'export PATH="$PATH:$(go env GOPATH)/bin/protoc/bin"'
 add_to_zshrc 'export PATH="$PATH:$(go env GOPATH)/bin"'
-add_to_zshrc '# Load Homebrew config script'
-add_to_zshrc 'source $HOME/.brewconfig.zsh'
 add_to_zshrc '# Использование команды code чтобы открывать папки в VScode'
 add_to_zshrc 'export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"'
 
